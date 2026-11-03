@@ -1,1812 +1,682 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 
 <html lang="pl">
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="theme-color" content="#080d18">
+<title>Meczownik – Football Journal</title>
 
-  <title>Meczownik — Twój piłkarski dziennik</title>
+<style>
 
-  <style>
+*{box-sizing:border-box;margin:0;padding:0}
 
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+body{font-family:Arial,sans-serif;background:#080e1b;color:#f4f7fc}
 
-    :root {
+button,input,select,textarea{font:inherit}
 
-      --bg: #080d18;
+button{cursor:pointer}
 
-      --panel: #101827;
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:230px;background:#0d1728;border-right:1px solid #23334c;padding:25px 16px}
 
-      --panel-light: #151f31;
+.logo{font-size:22px;font-weight:900;margin:5px 8px 45px}
 
-      --panel-hover: #1a2940;
+.logo span{color:#438cff}
 
-      --blue: #3985ff;
+.logo small{display:block;font-size:9px;letter-spacing:2px;color:#8291a9;margin-top:5px}
 
-      --blue-light: #65a3ff;
+.nav-title{font-size:10px;color:#71819a;letter-spacing:2px;margin:0 10px 15px}
 
-      --blue-soft: rgba(57,133,255,.13);
+nav button{display:block;width:100%;padding:14px 12px;text-align:left;border:0;border-radius:9px;background:transparent;color:#aab7ca;margin:5px 0;font-size:13px}
 
-      --text: #f2f6ff;
+nav button.active,nav button:hover{background:#1a2d4b;color:white}
 
-      --muted: #8794aa;
+nav button span{display:inline-block;width:30px;font-size:17px}
 
-      --border: rgba(154,177,211,.12);
+.sidebar-note{position:absolute;bottom:25px;left:22px;right:22px;background:#172943;padding:15px;border-radius:12px;font-size:12px;line-height:1.6;color:#b9c8dc}
 
-      --green: #38d69a;
+main{margin-left:230px;padding:30px;max-width:1500px}
 
-      --red: #ff647c;
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
 
-      --radius: 18px;
+header small{font-size:10px;letter-spacing:2px;color:#8291a9}
 
-    }
+header h1{font-size:27px;margin-top:7px}
 
-    * { box-sizing: border-box; }
+.user{background:#1b3e6a;border-radius:12px;padding:13px;font-size:12px}
 
-    body {
+.page{display:none}.page.active{display:block}
 
-      margin: 0;
+.hero{padding:30px;border-radius:16px;background:linear-gradient(120deg,#15366b,#1761b5);margin-bottom:25px}
 
-      min-height: 100vh;
+.hero small{font-size:10px;letter-spacing:2px}
 
-      background:
+.hero h2{font-size:25px;margin:13px 0}
 
-        radial-gradient(ellipse at 75% 0%, rgba(38,103,210,.13), transparent 35%),
+.hero p{font-size:13px;line-height:1.6;color:#d5e5ff;max-width:550px}
 
-        var(--bg);
+.heading{display:flex;justify-content:space-between;align-items:center;margin:25px 0 15px}
 
-      color: var(--text);
+.heading h2{font-size:17px}
 
-      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+.heading p{font-size:11px;color:#8493aa;margin-top:5px}
 
-    }
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
 
-    button, input, select, textarea { font: inherit; }
+.card{background:#111d30;border:1px solid #26364e;border-radius:13px;padding:19px;margin-bottom:15px}
 
-    button { cursor: pointer; }
+.stat-icon{font-size:21px;margin-bottom:15px}
 
-    .app {
+.stat-number{font-size:27px;font-weight:bold}
 
-      display: flex;
+.stat-label{font-size:11px;color:#91a0b6;margin-top:7px}
 
-      min-height: 100vh;
+.columns{display:grid;grid-template-columns:1.2fr 1fr;gap:15px}
 
-    }
+.activity{padding:12px 0;border-bottom:1px solid #28364b;font-size:12px;line-height:1.6}
 
-    /* BOCZNE MENU */
+.activity:last-child{border:0}
 
-    .sidebar {
+.activity small{display:block;color:#8493aa}
 
-      width: 250px;
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-      flex-shrink: 0;
+.actions button{padding:16px 8px;border:1px solid #314665;background:#1a2d49;color:white;border-radius:9px;font-size:12px}
 
-      min-height: 100vh;
+.actions button:hover{background:#254875}
 
-      padding: 28px 18px;
+.primary{border:0;background:#3987ff;color:white;border-radius:8px;padding:11px 15px;font-size:12px;font-weight:bold}
 
-      background: rgba(12,19,32,.92);
+.secondary{background:#1c2d45;color:white;border:1px solid #354964;border-radius:8px;padding:10px 14px;font-size:12px}
 
-      border-right: 1px solid var(--border);
+.danger{background:transparent;color:#ff8995;border:1px solid #74404c;border-radius:7px;padding:7px 10px;font-size:11px}
 
-      display: flex;
+.form{display:none;margin-bottom:20px}
 
-      flex-direction: column;
+.form.open{display:block}
 
-      position: fixed;
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 
-      inset: 0 auto 0 0;
+.field{display:flex;flex-direction:column;gap:7px}
 
-      z-index: 10;
+.field.full{grid-column:1/-1}
 
-    }
+label{font-size:11px;color:#aab8cb}
 
-    .brand {
+input,select,textarea{width:100%;padding:11px;background:#091321;border:1px solid #30415a;border-radius:8px;color:white;font-size:12px}
 
-      display: flex;
+textarea{min-height:75px;resize:vertical}
 
-      align-items: center;
+.form-buttons{display:flex;gap:9px;margin-top:15px}
 
-      gap: 12px;
+.entry{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#111d30;border:1px solid #26364e;border-radius:12px;padding:17px;margin-bottom:11px}
 
-      padding: 4px 10px 36px;
+.entry h3{font-size:14px;margin-bottom:7px}
 
-    }
+.entry p{font-size:11px;color:#91a0b6;line-height:1.7}
 
-    .brand-icon {
+.entry-actions{display:flex;gap:7px;align-items:center}
 
-      width: 42px;
+.empty{text-align:center;padding:35px;background:#111d30;border:1px dashed #35445c;border-radius:12px;color:#91a0b6;font-size:12px}
 
-      height: 42px;
+.profile{display:flex;align-items:center;gap:18px;padding:23px;background:#142944;border-radius:13px;margin-bottom:17px}
 
-      display: grid;
+.avatar{width:65px;height:65px;border-radius:17px;background:#2862a5;display:grid;place-items:center;font-size:27px}
 
-      place-items: center;
+.profile h2{font-size:20px}.profile p{font-size:12px;color:#aab8cb;margin-top:6px}
 
-      border-radius: 13px;
+.progress{height:7px;background:#293951;border-radius:9px;margin-top:13px;overflow:hidden}
 
-      background: linear-gradient(135deg, #3985ff, #1855c9);
+.progress div{height:100%;background:#3987ff}
 
-      box-shadow: 0 7px 24px rgba(57,133,255,.25);
+@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.columns{grid-template-columns:1fr}}
 
-      font-size: 22px;
+@media(max-width:650px){
 
-    }
+.sidebar{top:auto;bottom:0;width:100%;height:65px;padding:5px;z-index:5;border-right:0;border-top:1px solid #26364e}
 
-    .brand-name {
+.logo,.nav-title,.sidebar-note{display:none}
 
-      font-size: 20px;
+nav{display:flex;height:100%;justify-content:space-around}
 
-      font-weight: 800;
+nav button{flex:1;text-align:center;padding:7px 2px;margin:0;font-size:9px}
 
-      letter-spacing: -.7px;
+nav button span{display:block;width:auto;font-size:18px;margin-bottom:4px}
 
-    }
+main{margin:0;padding:20px 14px 85px}
 
-    .brand-subtitle {
+header h1{font-size:22px}
 
-      color: var(--muted);
+.hero{padding:22px}.hero h2{font-size:21px}
 
-      font-size: 10px;
+.stats{gap:9px}.card{padding:14px}
 
-      margin-top: 2px;
+.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
 
-      letter-spacing: 1.4px;
+.entry{align-items:flex-start;flex-direction:column}
 
-      text-transform: uppercase;
+.entry-actions{align-self:flex-end}
 
-    }
+.user{font-size:10px}
 
-    .nav-label {
+}
 
-      color: #63718a;
-
-      font-size: 10px;
-
-      font-weight: 700;
-
-      letter-spacing: 1.5px;
-
-      padding: 0 12px;
-
-      margin: 4px 0 12px;
-
-      text-transform: uppercase;
-
-    }
-
-    .nav {
-
-      display: grid;
-
-      gap: 7px;
-
-    }
-
-    .nav-button {
-
-      width: 100%;
-
-      border: 0;
-
-      background: transparent;
-
-      color: #9aa8be;
-
-      border-radius: 12px;
-
-      padding: 12px 14px;
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 13px;
-
-      text-align: left;
-
-      font-size: 13px;
-
-      font-weight: 600;
-
-      transition: .2s;
-
-    }
-
-    .nav-button:hover {
-
-      background: var(--panel-light);
-
-      color: var(--text);
-
-    }
-
-    .nav-button.active {
-
-      color: white;
-
-      background: linear-gradient(90deg, rgba(57,133,255,.22), rgba(57,133,255,.07));
-
-      box-shadow: inset 3px 0 var(--blue);
-
-    }
-
-    .nav-icon {
-
-      width: 20px;
-
-      text-align: center;
-
-      font-size: 17px;
-
-    }
-
-    .sidebar-bottom {
-
-      margin-top: auto;
-
-      padding: 18px 10px 4px;
-
-      border-top: 1px solid var(--border);
-
-    }
-
-    .sidebar-note {
-
-      color: var(--muted);
-
-      font-size: 11px;
-
-      line-height: 1.6;
-
-    }
-
-    /* GŁÓWNA CZĘŚĆ */
-
-    .main {
-
-      width: calc(100% - 250px);
-
-      margin-left: 250px;
-
-      padding: 34px 42px 60px;
-
-      max-width: 1600px;
-
-    }
-
-    .topbar {
-
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: center;
-
-      gap: 20px;
-
-      margin-bottom: 32px;
-
-    }
-
-    .eyebrow {
-
-      color: var(--blue-light);
-
-      font-size: 10px;
-
-      font-weight: 800;
-
-      letter-spacing: 1.8px;
-
-      text-transform: uppercase;
-
-      margin-bottom: 8px;
-
-    }
-
-    h1 {
-
-      margin: 0;
-
-      font-size: clamp(25px, 3vw, 34px);
-
-      letter-spacing: -1.2px;
-
-    }
-
-    .topbar-right {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 12px;
-
-    }
-
-    .today {
-
-      color: var(--muted);
-
-      font-size: 12px;
-
-      padding: 10px 14px;
-
-      border: 1px solid var(--border);
-
-      border-radius: 12px;
-
-      background: rgba(16,24,39,.65);
-
-    }
-
-    .avatar {
-
-      width: 42px;
-
-      height: 42px;
-
-      border-radius: 14px;
-
-      display: grid;
-
-      place-items: center;
-
-      background: var(--blue-soft);
-
-      color: var(--blue-light);
-
-      font-weight: 800;
-
-      border: 1px solid rgba(57,133,255,.25);
-
-    }
-
-    .page { display: none; }
-
-    .page.active { display: block; animation: appear .25s ease; }
-
-    @keyframes appear {
-
-      from { opacity: 0; transform: translateY(5px); }
-
-      to { opacity: 1; transform: translateY(0); }
-
-    }
-
-    /* KARTY */
-
-    .welcome-card {
-
-      min-height: 190px;
-
-      padding: 30px;
-
-      border-radius: 22px;
-
-      background:
-
-        radial-gradient(circle at 85% 40%, rgba(93,157,255,.3), transparent 27%),
-
-        linear-gradient(115deg, #15366e, #10264a 60%, #102039);
-
-      border: 1px solid rgba(108,164,255,.22);
-
-      position: relative;
-
-      overflow: hidden;
-
-      margin-bottom: 24px;
-
-    }
-
-    .welcome-card::after {
-
-      content: "⚽";
-
-      position: absolute;
-
-      right: 55px;
-
-      top: 28px;
-
-      font-size: 105px;
-
-      opacity: .12;
-
-      transform: rotate(-18deg);
-
-    }
-
-    .welcome-card h2 {
-
-      font-size: 25px;
-
-      margin: 8px 0;
-
-      letter-spacing: -.7px;
-
-      position: relative;
-
-      z-index: 1;
-
-    }
-
-    .welcome-card p {
-
-      color: #c0d3f2;
-
-      font-size: 13px;
-
-      margin: 0;
-
-      position: relative;
-
-      z-index: 1;
-
-    }
-
-    .welcome-tag {
-
-      display: inline-block;
-
-      padding: 6px 10px;
-
-      border: 1px solid rgba(255,255,255,.2);
-
-      border-radius: 20px;
-
-      color: #d8e7ff;
-
-      font-size: 10px;
-
-      font-weight: 700;
-
-      letter-spacing: 1px;
-
-      text-transform: uppercase;
-
-    }
-
-    .section-heading {
-
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: center;
-
-      gap: 12px;
-
-      margin: 30px 0 15px;
-
-    }
-
-    .section-heading h2 {
-
-      font-size: 16px;
-
-      margin: 0;
-
-      letter-spacing: -.3px;
-
-    }
-
-    .section-heading span {
-
-      color: var(--muted);
-
-      font-size: 11px;
-
-    }
-
-    .stats-grid {
-
-      display: grid;
-
-      grid-template-columns: repeat(4, minmax(0,1fr));
-
-      gap: 14px;
-
-    }
-
-    .stat-card, .card {
-
-      background: linear-gradient(145deg, rgba(19,29,47,.98), rgba(14,23,38,.98));
-
-      border: 1px solid var(--border);
-
-      border-radius: var(--radius);
-
-    }
-
-    .stat-card {
-
-      padding: 19px;
-
-      min-height: 125px;
-
-    }
-
-    .stat-top {
-
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: center;
-
-      color: var(--muted);
-
-      font-size: 11px;
-
-      gap: 8px;
-
-    }
-
-    .stat-icon {
-
-      width: 32px;
-
-      height: 32px;
-
-      display: grid;
-
-      place-items: center;
-
-      border-radius: 10px;
-
-      background: var(--blue-soft);
-
-      font-size: 15px;
-
-    }
-
-    .stat-number {
-
-      font-size: 29px;
-
-      font-weight: 800;
-
-      margin-top: 13px;
-
-      letter-spacing: -1px;
-
-    }
-
-    .stat-caption {
-
-      color: var(--muted);
-
-      font-size: 10px;
-
-      margin-top: 2px;
-
-    }
-
-    .dashboard-grid {
-
-      display: grid;
-
-      grid-template-columns: 1.2fr .8fr;
-
-      gap: 16px;
-
-      margin-top: 18px;
-
-    }
-
-    .card { padding: 21px; }
-
-    .card-title {
-
-      font-size: 14px;
-
-      font-weight: 700;
-
-      margin: 0 0 17px;
-
-    }
-
-    .quick-actions {
-
-      display: grid;
-
-      grid-template-columns: repeat(2,1fr);
-
-      gap: 10px;
-
-    }
-
-    .quick-action {
-
-      padding: 15px;
-
-      border-radius: 13px;
-
-      border: 1px solid var(--border);
-
-      background: var(--panel-light);
-
-      color: var(--text);
-
-      text-align: left;
-
-      transition: .2s;
-
-    }
-
-    .quick-action:hover {
-
-      border-color: rgba(57,133,255,.6);
-
-      background: var(--panel-hover);
-
-      transform: translateY(-2px);
-
-    }
-
-    .quick-action span {
-
-      display: block;
-
-      font-size: 19px;
-
-      margin-bottom: 9px;
-
-    }
-
-    .quick-action strong {
-
-      font-size: 12px;
-
-      display: block;
-
-    }
-
-    .quick-action small {
-
-      color: var(--muted);
-
-      font-size: 10px;
-
-      display: block;
-
-      margin-top: 3px;
-
-    }
-
-    .empty {
-
-      text-align: center;
-
-      padding: 28px 15px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-
-      border: 1px dashed var(--border);
-
-      border-radius: 13px;
-
-      line-height: 1.7;
-
-    }
-
-    .empty-icon {
-
-      font-size: 25px;
-
-      margin-bottom: 8px;
-
-    }
-
-    /* FORMULARZE */
-
-    .content-grid {
-
-      display: grid;
-
-      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-
-      gap: 17px;
-
-      align-items: start;
-
-    }
-
-    .form-grid {
-
-      display: grid;
-
-      grid-template-columns: repeat(2,minmax(0,1fr));
-
-      gap: 13px;
-
-    }
-
-    .field { display: flex; flex-direction: column; gap: 7px; }
-
-    .field.full { grid-column: 1 / -1; }
-
-    .field label {
-
-      color: #aab7ca;
-
-      font-size: 11px;
-
-      font-weight: 600;
-
-    }
-
-    .field input, .field select, .field textarea {
-
-      width: 100%;
-
-      background: #0b1321;
-
-      border: 1px solid var(--border);
-
-      border-radius: 10px;
-
-      color: var(--text);
-
-      padding: 12px;
-
-      outline: none;
-
-      font-size: 12px;
-
-      transition: .2s;
-
-    }
-
-    .field input:focus, .field select:focus, .field textarea:focus {
-
-      border-color: var(--blue);
-
-      box-shadow: 0 0 0 3px rgba(57,133,255,.1);
-
-    }
-
-    .field textarea {
-
-      resize: vertical;
-
-      min-height: 82px;
-
-    }
-
-    .field input::placeholder, .field textarea::placeholder {
-
-      color: #59677e;
-
-    }
-
-    .field select option { background: #101827; }
-
-    .primary-button {
-
-      border: 0;
-
-      border-radius: 10px;
-
-      background: linear-gradient(135deg, #438fff, #2468dc);
-
-      color: white;
-
-      padding: 12px 17px;
-
-      font-weight: 700;
-
-      font-size: 12px;
-
-      box-shadow: 0 6px 18px rgba(57,133,255,.17);
-
-      transition: .2s;
-
-    }
-
-    .primary-button:hover {
-
-      filter: brightness(1.12);
-
-      transform: translateY(-1px);
-
-    }
-
-    .form-submit {
-
-      margin-top: 16px;
-
-      width: 100%;
-
-    }
-
-    /* LISTY */
-
-    .entry-list { display: grid; gap: 10px; }
-
-    .entry {
-
-      display: flex;
-
-      align-items: flex-start;
-
-      gap: 12px;
-
-      padding: 14px;
-
-      border: 1px solid var(--border);
-
-      background: rgba(21,31,49,.7);
-
-      border-radius: 13px;
-
-    }
-
-    .entry-icon {
-
-      width: 37px;
-
-      height: 37px;
-
-      flex-shrink: 0;
-
-      border-radius: 11px;
-
-      background: var(--blue-soft);
-
-      display: grid;
-
-      place-items: center;
-
-      font-size: 16px;
-
-    }
-
-    .entry-body { min-width: 0; flex: 1; }
-
-    .entry-title {
-
-      font-size: 12px;
-
-      font-weight: 700;
-
-      margin: 1px 0 5px;
-
-      overflow-wrap: anywhere;
-
-    }
-
-    .entry-meta {
-
-      color: var(--muted);
-
-      font-size: 10px;
-
-      line-height: 1.6;
-
-    }
-
-    .entry-note {
-
-      color: #b8c5d9;
-
-      font-size: 11px;
-
-      margin-top: 7px;
-
-      overflow-wrap: anywhere;
-
-    }
-
-    .delete-button {
-
-      background: transparent;
-
-      color: #78869c;
-
-      border: 0;
-
-      padding: 5px;
-
-      font-size: 15px;
-
-      border-radius: 7px;
-
-    }
-
-    .delete-button:hover {
-
-      color: var(--red);
-
-      background: rgba(255,100,124,.1);
-
-    }
-
-    /* CELE */
-
-    .goal-item {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 12px;
-
-      padding: 14px;
-
-      background: rgba(21,31,49,.7);
-
-      border: 1px solid var(--border);
-
-      border-radius: 12px;
-
-    }
-
-    .goal-item input {
-
-      width: 17px;
-
-      height: 17px;
-
-      accent-color: var(--blue);
-
-      flex-shrink: 0;
-
-    }
-
-    .goal-text {
-
-      flex: 1;
-
-      font-size: 12px;
-
-      overflow-wrap: anywhere;
-
-    }
-
-    .goal-item.done .goal-text {
-
-      color: var(--muted);
-
-      text-decoration: line-through;
-
-    }
-
-    /* PROFIL */
-
-    .profile-top {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 17px;
-
-      padding: 22px;
-
-      margin-bottom: 17px;
-
-      border-radius: var(--radius);
-
-      background: linear-gradient(120deg, #142e58, #111d32);
-
-      border: 1px solid rgba(57,133,255,.2);
-
-    }
-
-    .profile-avatar {
-
-      width: 65px;
-
-      height: 65px;
-
-      display: grid;
-
-      place-items: center;
-
-      border-radius: 19px;
-
-      background: linear-gradient(135deg, #3985ff, #174da8);
-
-      font-size: 27px;
-
-      font-weight: 800;
-
-    }
-
-    .profile-top h2 { margin: 0 0 5px; font-size: 19px; }
-
-    .profile-top p { margin: 0; color: #a8bfdf; font-size: 11px; }
-
-    .progress-track {
-
-      height: 7px;
-
-      background: #26364e;
-
-      border-radius: 20px;
-
-      overflow: hidden;
-
-      margin-top: 12px;
-
-    }
-
-    .progress-fill {
-
-      height: 100%;
-
-      background: linear-gradient(90deg, #3985ff, #69b1ff);
-
-      border-radius: 20px;
-
-      transition: width .3s;
-
-    }
-
-    .muted { color: var(--muted); }
-
-    .hidden { display: none !important; }
-
-    /* TELEFON */
-
-    @media (max-width: 1050px) {
-
-      .main { padding: 28px 25px 45px; }
-
-      .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-
-    }
-
-    @media (max-width: 760px) {
-
-      .sidebar {
-
-        top: auto;
-
-        bottom: 0;
-
-        width: 100%;
-
-        min-height: 0;
-
-        height: 72px;
-
-        padding: 7px 8px;
-
-        background: rgba(10,16,28,.97);
-
-        border-right: 0;
-
-        border-top: 1px solid var(--border);
-
-      }
-
-      .brand, .nav-label, .sidebar-bottom { display: none; }
-
-      .nav {
-
-        height: 100%;
-
-        grid-template-columns: repeat(5,1fr);
-
-        gap: 2px;
-
-      }
-
-      .nav-button {
-
-        height: 100%;
-
-        padding: 5px 2px;
-
-        border-radius: 9px;
-
-        flex-direction: column;
-
-        justify-content: center;
-
-        gap: 4px;
-
-        font-size: 9px;
-
-      }
-
-      .nav-button.active {
-
-        box-shadow: inset 0 2px var(--blue);
-
-      }
-
-      .nav-icon { font-size: 18px; }
-
-      .main {
-
-        width: 100%;
-
-        margin-left: 0;
-
-        padding: 23px 16px 95px;
-
-      }
-
-      .topbar { margin-bottom: 23px; }
-
-      .today { display: none; }
-
-      .topbar-right { gap: 0; }
-
-      .welcome-card { padding: 23px; min-height: 165px; }
-
-      .welcome-card::after { right: 15px; font-size: 78px; top: 48px; }
-
-      .welcome-card h2 { font-size: 21px; max-width: 230px; }
-
-      .stats-grid { gap: 9px; }
-
-      .stat-card { padding: 14px; min-height: 112px; }
-
-      .stat-number { font-size: 25px; }
-
-      .stat-top { font-size: 10px; }
-
-      .dashboard-grid, .content-grid { grid-template-columns: 1fr; }
-
-      .card { padding: 17px; }
-
-      .section-heading { margin-top: 24px; }
-
-    }
-
-    @media (max-width: 390px) {
-
-      .main { padding-left: 12px; padding-right: 12px; }
-
-      .form-grid { grid-template-columns: 1fr; }
-
-      .field.full { grid-column: auto; }
-
-      .quick-actions { grid-template-columns: 1fr 1fr; }
-
-    }
-
-  </style>
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
 <body>
 
-<div class="app">
+<aside class="sidebar">
 
-  <aside class="sidebar">
+<div class="logo">⚽ Meczownik<span><small>FOOTBALL JOURNAL</small></span></div>
 
-    <div class="brand">
+<div class="nav-title">MENU GŁÓWNE</div>
 
-      <div class="brand-icon">⚽</div>
+<nav>
 
-      <div>
+<button class="active" data-page="dashboard" onclick="showPage('dashboard')"><span>▦</span>Pulpit</button>
 
-        <div class="brand-name">Meczownik</div>
+<button data-page="trainings" onclick="showPage('trainings')"><span>⚡</span>Treningi</button>
 
-        <div class="brand-subtitle">Football journal</div>
+<button data-page="matches" onclick="showPage('matches')"><span>⚽</span>Mecze</button>
 
-      </div>
+<button data-page="goals" onclick="showPage('goals')"><span>◎</span>Cele</button>
 
-    </div>
+<button data-page="profile" onclick="showPage('profile')"><span>♙</span>Profil</button>
 
-    <div class="nav-label">Menu główne</div>
+</nav>
 
-    <nav class="nav">
+<div class="sidebar-note"><b>Twój rozwój zaczyna się od regularności.</b><br>Zapisuj, analizuj i działaj.</div>
 
-      <button class="nav-button active" data-page="home"><span class="nav-icon">▦</span>Pulpit</button>
+</aside>
 
-      <button class="nav-button" data-page="training"><span class="nav-icon">⚡</span>Treningi</button>
+<main>
 
-      <button class="nav-button" data-page="matches"><span class="nav-icon">⚽</span>Mecze</button>
+<header>
 
-      <button class="nav-button" data-page="goals"><span class="nav-icon">◎</span>Cele</button>
+<div><small>TWOJA PIŁKARSKA PRZESTRZEŃ</small><h1 id="page-title">Pulpit</h1></div>
 
-      <button class="nav-button" data-page="profile"><span class="nav-icon">♙</span>Profil</button>
+<div class="user" id="header-user">⚽ Zawodnik</div>
 
-    </nav>
+</header>
 
-    <div class="sidebar-bottom">
+<section id="dashboard" class="page active">
 
-      <div class="sidebar-note">Twój rozwój zaczyna się od regularności. Zapisuj, analizuj i działaj.</div>
+<div class="hero">
 
-    </div>
+<small>WITAJ W MECZOWNIKU</small>
 
-  </aside>
+<h2>Czas na kolejny krok w rozwoju!</h2>
 
-  <main class="main">
-
-    <header class="topbar">
-
-      <div>
-
-        <div class="eyebrow">Twoja piłkarska przestrzeń</div>
-
-        <h1 id="pageTitle">Pulpit</h1>
-
-      </div>
-
-      <div class="topbar-right">
-
-        <div class="today" id="todayDate"></div>
-
-        <div class="avatar" id="topAvatar">Z</div>
-
-      </div>
-
-    </header>
-
-    <!-- PULPIT -->
-
-    <section class="page active" id="page-home">
-
-      <div class="welcome-card">
-
-        <span class="welcome-tag">Twój dziennik zawodnika</span>
-
-        <h2>Witaj ponownie, <span id="welcomeName">Zawodniku</span>!</h2>
-
-        <p>Każdy trening przybliża Cię do celu. Zapisuj swój progres.</p>
-
-      </div>
-
-      <div class="section-heading">
-
-        <h2>Twoje statystyki</h2>
-
-        <span>Wszystkie zapisane aktywności</span>
-
-      </div>
-
-      <div class="stats-grid">
-
-        <div class="stat-card">
-
-          <div class="stat-top"><span>Treningi</span><span class="stat-icon">⚡</span></div>
-
-          <div class="stat-number" id="statTrainings">0</div>
-
-          <div class="stat-caption">Zapisane jednostki</div>
-
-        </div>
-
-        <div class="stat-card">
-
-          <div class="stat-top"><span>Godziny</span><span class="stat-icon">◷</span></div>
-
-          <div class="stat-number" id="statHours">0</div>
-
-          <div class="stat-caption">Łączny czas treningów</div>
-
-        </div>
-
-        <div class="stat-card">
-
-          <div class="stat-top"><span>Mecze</span><span class="stat-icon">⚽</span></div>
-
-          <div class="stat-number" id="statMatches">0</div>
-
-          <div class="stat-caption">Zapisane spotkania</div>
-
-        </div>
-
-        <div class="stat-card">
-
-          <div class="stat-top"><span>Gole</span><span class="stat-icon">✦</span></div>
-
-          <div class="stat-number" id="statGoals">0</div>
-
-          <div class="stat-caption">Strzelone bramki</div>
-
-        </div>
-
-      </div>
-
-      <div class="dashboard-grid">
-
-        <div class="card">
-
-          <h3 class="card-title">Ostatnia aktywność</h3>
-
-          <div class="entry-list" id="recentActivity"></div>
-
-        </div>
-
-        <div class="card">
-
-          <h3 class="card-title">Szybkie działania</h3>
-
-          <div class="quick-actions">
-
-            <button class="quick-action" data-go="training"><span>⚡</span><strong>Dodaj trening</strong><small>Zapisz nową jednostkę</small></button>
-
-            <button class="quick-action" data-go="matches"><span>⚽</span><strong>Dodaj mecz</strong><small>Uzupełnij statystyki</small></button>
-
-            <button class="quick-action" data-go="goals"><span>◎</span><strong>Dodaj cel</strong><small>Wyznacz kierunek</small></button>
-
-            <button class="quick-action" data-go="profile"><span>♙</span><strong>Edytuj profil</strong><small>Twoje dane zawodnika</small></button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- TRENINGI -->
-
-    <section class="page" id="page-training">
-
-      <div class="section-heading">
-
-        <h2>Dziennik treningowy</h2>
-
-        <span>Zapisuj każdą jednostkę</span>
-
-      </div>
-
-      <div class="content-grid">
-
-        <div class="card">
-
-          <h3 class="card-title">＋ Dodaj trening</h3>
-
-          <form id="trainingForm">
-
-            <div class="form-grid">
-
-              <div class="field">
-
-                <label for="trainingDate">Data</label>
-
-                <input type="date" id="trainingDate" required>
-
-              </div>
-
-              <div class="field">
-
-                <label for="trainingType">Rodzaj treningu</label>
-
-                <select id="trainingType" required>
-
-                  <option value="Trening drużynowy">Trening drużynowy</option>
-
-                  <option value="Trening indywidualny">Trening indywidualny</option>
-
-                  <option value="Siłownia">Siłownia</option>
-
-                  <option value="Bieganie">Bieganie</option>
-
-                  <option value="Regeneracja">Regeneracja</option>
-
-                  <option value="Inny">Inny</option>
-
-                </select>
-
-              </div>
-
-              <div class="field">
-
-                <label for="trainingDuration">Czas (minuty)</label>
-
-                <input type="number" id="trainingDuration" min="1" max="600" placeholder="Np. 90" required>
-
-              </div>
-
-              <div class="field">
-
-                <label for="trainingIntensity">Intensywność</label>
-
-                <select id="trainingIntensity">
-
-                  <option value="Lekka">Lekka</option>
-
-                  <option value="Średnia" selected>Średnia</option>
-
-                  <option value="Wysoka">Wysoka</option>
-
-                </select>
-
-              </div>
-
-              <div class="field full">
-
-                <label for="trainingNotes">Notatka (opcjonalnie)</label>
-
-                <textarea id="trainingNotes" placeholder="Jak wyglądał trening? Nad czym pracowałeś?"></textarea>
-
-              </div>
-
-            </div>
-
-            <button class="primary-button form-submit" type="submit">Zapisz trening</button>
-
-          </form>
-
-        </div>
-
-        <div class="card">
-
-          <h3 class="card-title">Historia treningów</h3>
-
-          <div class="entry-list" id="trainingList"></div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- MECZE -->
-
-    <section class="page" id="page-matches">
-
-      <div class="section-heading">
-
-        <h2>Dziennik meczowy</h2>
-
-        <span>Twoje występy i statystyki</span>
-
-      </div>
-
-      <div class="content-grid">
-
-        <div class="card">
-
-          <h3 class="card-title">＋ Dodaj mecz</h3>
-
-          <form id="matchForm">
-
-            <div class="form-grid">
-
-              <div class="field">
-
-                <label for="matchDate">Data meczu</label>
-
-                <input type="date" id="matchDate" required>
-
-              </div>
-
-              <div class="field">
-
-                <label for="matchOpponent">Przeciwnik</label>
-
-                <input type="text" id="matchOpponent" placeholder="Nazwa drużyny" required>
-
-              </div>
-
-              <div class="field">
-
-                <label for="matchGoals">Strzelone gole</label>
-
-                <input type="number" id="matchGoals" min="0" max="30" value="0" required>
-
-              </div>
-
-              <div class="field">
-
-                <label for="matchAssists">Asysty</label>
-
-                <input type="number" id="matchAssists" min="0" max="30" value="0" required>
-
-              </div>
-
-              <div class="field full">
-
-                <label for="matchMinutes">Rozegrane minuty</label>
-
-                <input type="number" id="matchMinutes" min="0" max="150" placeholder="Np. 90" required>
-
-              </div>
-
-            </div>
-
-            <button class="primary-button form-submit" type="submit">Zapisz mecz</button>
-
-          </form>
-
-        </div>
-
-        <div class="card">
-
-          <h3 class="card-title">Historia meczów</h3>
-
-          <div class="entry-list" id="matchList"></div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- CELE -->
-
-    <section class="page" id="page-goals">
-
-      <div class="section-heading">
-
-        <h2>Twoje cele</h2>
-
-        <span>Małe kroki prowadzą do dużych zmian</span>
-
-      </div>
-
-      <div class="content-grid">
-
-        <div class="card">
-
-          <h3 class="card-title">＋ Dodaj nowy cel</h3>
-
-          <form id="goalForm">
-
-            <div class="field">
-
-              <label for="goalText">Co chcesz osiągnąć?</label>
-
-              <input type="text" id="goalText" placeholder="Np. Poprawić słabszą nogę" maxlength="120" required>
-
-            </div>
-
-            <button class="primary-button form-submit" type="submit">Dodaj cel</button>
-
-          </form>
-
-          <div style="margin-top:25px">
-
-            <div class="stat-top"><span>Postęp realizacji</span><strong id="goalProgressText">0%</strong></div>
-
-            <div class="progress-track"><div class="progress-fill" id="goalProgress" style="width:0%"></div></div>
-
-          </div>
-
-        </div>
-
-        <div class="card">
-
-          <h3 class="card-title">Lista celów</h3>
-
-          <div class="entry-list" id="goalList"></div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- PROFIL -->
-
-    <section class="page" id="page-profile">
-
-      <div class="section-heading">
-
-        <h2>Profil zawodnika</h2>
-
-        <span>Twoje piłkarskie dane</span>
-
-      </div>
-
-      <div class="profile-top">
-
-        <div class="profile-avatar" id="profileAvatar">Z</div>
-
-        <div>
-
-          <h2 id="profileDisplayName">Zawodnik</h2>
-
-          <p id="profileDisplayInfo">Uzupełnij swój profil</p>
-
-        </div>
-
-      </div>
-
-      <div class="card" style="max-width:650px">
-
-        <h3 class="card-title">Edytuj informacje</h3>
-
-        <form id="profileForm">
-
-          <div class="form-grid">
-
-            <div class="field full">
-
-              <label for="profileName">Imię i nazwisko</label>
-
-              <input type="text" id="profileName" placeholder="Jak się nazywasz?">
-
-            </div>
-
-            <div class="field">
-
-              <label for="profilePosition">Pozycja</label>
-
-              <select id="profilePosition">
-
-                <option value="">Wybierz pozycję</option>
-
-                <option>Bramkarz</option>
-
-                <option>Obrońca</option>
-
-                <option>Środkowy obrońca</option>
-
-                <option>Boczny obrońca</option>
-
-                <option>Pomocnik</option>
-
-                <option>Defensywny pomocnik</option>
-
-                <option>Środkowy pomocnik</option>
-
-                <option>Ofensywny pomocnik</option>
-
-                <option>Skrzydłowy</option>
-
-                <option>Napastnik</option>
-
-              </select>
-
-            </div>
-
-            <div class="field">
-
-              <label for="profileClub">Klub</label>
-
-              <input type="text" id="profileClub" placeholder="Nazwa klubu">
-
-            </div>
-
-          </div>
-
-          <button class="primary-button form-submit" type="submit">Zapisz profil</button>
-
-        </form>
-
-      </div>
-
-    </section>
-
-  </main>
+<p>Każdy trening ma znaczenie. Zapisuj swoje postępy, analizuj występy i konsekwentnie realizuj swoje cele.</p>
 
 </div>
 
+<div class="heading"><div><h2>Twoje statystyki</h2><p>Podsumowanie Twojej aktywności</p></div></div>
+
+<div class="stats">
+
+<div class="card"><div class="stat-icon">⚡</div><div class="stat-number" id="stat-training">0</div><div class="stat-label">Wykonane treningi</div></div>
+
+<div class="card"><div class="stat-icon">⚽</div><div class="stat-number" id="stat-match">0</div><div class="stat-label">Rozegrane mecze</div></div>
+
+<div class="card"><div class="stat-icon">🎯</div><div class="stat-number" id="stat-goals">0</div><div class="stat-label">Strzelone gole</div></div>
+
+<div class="card"><div class="stat-icon">⏱️</div><div class="stat-number" id="stat-hours">0 h</div><div class="stat-label">Godziny treningów</div></div>
+
+</div>
+
+<div class="columns">
+
+<div><div class="heading"><h2>Ostatnia aktywność</h2></div>
+
+<div class="card" id="recent"><p style="color:#91a0b6;font-size:12px">Nie masz jeszcze żadnych wpisów.</p></div></div>
+
+<div><div class="heading"><h2>Szybkie działania</h2></div>
+
+<div class="card actions">
+
+<button onclick="openForm('training-form','trainings')">⚡<br>Dodaj trening</button>
+
+<button onclick="openForm('match-form','matches')">⚽<br>Dodaj mecz</button>
+
+<button onclick="openForm('goal-form','goals')">🎯<br>Dodaj cel</button>
+
+<button onclick="showPage('profile')">♙<br>Edytuj profil</button>
+
+</div>
+
+<div class="heading"><h2>Realizacja celów</h2></div>
+
+<div class="card">
+
+<div style="display:flex;justify-content:space-between;font-size:12px"><b>Twoje postępy</b><b id="goal-percent">0%</b></div>
+
+<div class="progress"><div id="goal-progress" style="width:0%"></div></div>
+
+<p id="goal-count" style="font-size:10px;color:#91a0b6;margin-top:10px">0 z 0 celów ukończonych</p>
+
+</div></div></div>
+
+</section>
+
+<section id="trainings" class="page">
+
+<div class="heading"><div><h2>Twoje treningi</h2><p>Dokumentuj swoją pracę na boisku i poza nim.</p></div>
+
+<button class="primary" onclick="toggleForm('training-form')">+ Dodaj trening</button></div>
+
+<form id="training-form" class="card form" onsubmit="saveTraining(event)">
+
+<h3 style="margin-bottom:17px">Nowy trening</h3>
+
+<div class="form-grid">
+
+<div class="field"><label>Data</label><input type="date" id="training-date" required></div>
+
+<div class="field"><label>Rodzaj treningu</label><select id="training-type"><option>Trening piłkarski</option><option>Siłownia</option><option>Bieganie</option><option>Regeneracja</option><option>Technika</option><option>Taktyka</option><option>Inny</option></select></div>
+
+<div class="field"><label>Czas trwania (minuty)</label><input type="number" id="training-duration" min="1" required placeholder="np. 90"></div>
+
+<div class="field"><label>Intensywność</label><select id="training-intensity"><option>Lekka</option><option>Średnia</option><option>Wysoka</option></select></div>
+
+<div class="field full"><label>Notatki</label><textarea id="training-notes" placeholder="Co robiłeś? Nad czym pracowałeś?"></textarea></div>
+
+</div>
+
+<div class="form-buttons"><button class="primary">Zapisz trening</button><button type="button" class="secondary" onclick="toggleForm('training-form')">Anuluj</button></div>
+
+</form>
+
+<div id="training-list" class="list"></div>
+
+</section>
+
+<section id="matches" class="page">
+
+<div class="heading"><div><h2>Twoje mecze</h2><p>Analizuj swoje występy i wyniki.</p></div>
+
+<button class="primary" onclick="toggleForm('match-form')">+ Dodaj mecz</button></div>
+
+<form id="match-form" class="card form" onsubmit="saveMatch(event)">
+
+<h3 style="margin-bottom:17px">Nowy mecz</h3>
+
+<div class="form-grid">
+
+<div class="field"><label>Data</label><input type="date" id="match-date" required></div>
+
+<div class="field"><label>Przeciwnik</label><input id="match-opponent" required placeholder="Nazwa drużyny"></div>
+
+<div class="field"><label>Gole</label><input type="number" id="match-goals" min="0" value="0"></div>
+
+<div class="field"><label>Asysty</label><input type="number" id="match-assists" min="0" value="0"></div>
+
+<div class="field"><label>Minuty na boisku</label><input type="number" id="match-minutes" min="0" placeholder="np. 90"></div>
+
+<div class="field"><label>Ocena występu (1–10)</label><input type="number" id="match-rating" min="1" max="10" step="0.5" placeholder="np. 8"></div>
+
+<div class="field"><label>Gole Twojej drużyny</label><input type="number" id="match-score-for" min="0" value="0"></div>
+
+<div class="field"><label>Gole przeciwnika</label><input type="number" id="match-score-against" min="0" value="0"></div>
+
+<div class="field full"><label>Notatki z meczu</label><textarea id="match-notes" placeholder="Co poszło dobrze? Co poprawić?"></textarea></div>
+
+</div>
+
+<div class="form-buttons"><button class="primary">Zapisz mecz</button><button type="button" class="secondary" onclick="toggleForm('match-form')">Anuluj</button></div>
+
+</form>
+
+<div id="match-list" class="list"></div>
+
+</section>
+
+
+
+<!-- CELE -->
+
+<section id="goals" class="page">
+
+<div class="heading">
+
+<div><h2>Twoje cele</h2><p>Wyznaczaj cele i kontroluj swoje postępy.</p></div>
+
+<button class="primary" onclick="toggleForm('goal-form')">+ Dodaj cel</button>
+
+</div>
+
+<form id="goal-form" class="card form" onsubmit="saveGoal(event)">
+
+<h3 style="margin-bottom:17px">Nowy cel</h3>
+
+<div class="form-grid">
+
+<div class="field full">
+
+<label>Nazwa celu</label>
+
+<input id="goal-name" required placeholder="np. Poprawić szybkość">
+
+</div>
+
+<div class="field">
+
+<label>Kategoria</label>
+
+<select id="goal-category">
+
+<option>Technika</option>
+
+<option>Taktyka</option>
+
+<option>Motoryka</option>
+
+<option>Siła</option>
+
+<option>Wytrzymałość</option>
+
+<option>Mecze</option>
+
+<option>Inne</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>Termin realizacji</label>
+
+<input type="date" id="goal-date">
+
+</div>
+
+<div class="field full">
+
+<label>Opis celu</label>
+
+<textarea id="goal-description" placeholder="Opisz dokładniej, co chcesz osiągnąć."></textarea>
+
+</div>
+
+</div>
+
+<div class="form-buttons">
+
+<button class="primary">Zapisz cel</button>
+
+<button type="button" class="secondary" onclick="toggleForm('goal-form')">Anuluj</button>
+
+</div>
+
+</form>
+
+<div id="goal-list" class="list"></div>
+
+</section>
+
+<!-- PROFIL -->
+
+<section id="profile" class="page">
+
+<div class="heading">
+
+<div><h2>Twój profil</h2><p>Uzupełnij informacje o sobie jako zawodniku.</p></div>
+
+</div>
+
+<div class="profile">
+
+<div class="avatar">⚽</div>
+
+<div>
+
+<h2 id="profile-display-name">Zawodnik</h2>
+
+<p id="profile-display-club">Twój klub piłkarski</p>
+
+</div>
+
+</div>
+
+<form class="card" onsubmit="saveProfile(event)">
+
+<h3 style="margin-bottom:18px">Informacje o zawodniku</h3>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Imię i nazwisko</label>
+
+<input id="profile-name" placeholder="Twoje imię i nazwisko">
+
+</div>
+
+<div class="field">
+
+<label>Klub</label>
+
+<input id="profile-club" placeholder="Nazwa klubu">
+
+</div>
+
+<div class="field">
+
+<label>Pozycja na boisku</label>
+
+<select id="profile-position">
+
+<option value="">Wybierz pozycję</option>
+
+<option>Bramkarz</option>
+
+<option>Obrońca</option>
+
+<option>Środkowy obrońca</option>
+
+<option>Boczny obrońca</option>
+
+<option>Defensywny pomocnik</option>
+
+<option>Środkowy pomocnik</option>
+
+<option>Ofensywny pomocnik</option>
+
+<option>Skrzydłowy</option>
+
+<option>Napastnik</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>Numer na koszulce</label>
+
+<input type="number" id="profile-number" min="1" max="99" placeholder="np. 10">
+
+</div>
+
+<div class="field">
+
+<label>Lepsza noga</label>
+
+<select id="profile-foot">
+
+<option value="">Wybierz</option>
+
+<option>Prawa</option>
+
+<option>Lewa</option>
+
+<option>Obunożny</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>Data urodzenia</label>
+
+<input type="date" id="profile-birthday">
+
+</div>
+
+<div class="field full">
+
+<label>O mnie</label>
+
+<textarea id="profile-description" placeholder="Opisz siebie, swoje doświadczenie i piłkarskie ambicje."></textarea>
+
+</div>
+
+</div>
+
+<div class="form-buttons">
+
+<button class="primary">Zapisz profil</button>
+
+</div>
+
+</form>
+
+<div class="heading"><h2>Twoje statystyki kariery</h2></div>
+
+<div class="stats">
+
+<div class="card">
+
+<div class="stat-icon">⚽</div>
+
+<div class="stat-number" id="profile-goals">0</div>
+
+<div class="stat-label">Gole</div>
+
+</div>
+
+<div class="card">
+
+<div class="stat-icon">🎯</div>
+
+<div class="stat-number" id="profile-assists">0</div>
+
+<div class="stat-label">Asysty</div>
+
+</div>
+
+<div class="card">
+
+<div class="stat-icon">🏟️</div>
+
+<div class="stat-number" id="profile-matches">0</div>
+
+<div class="stat-label">Mecze</div>
+
+</div>
+
+<div class="card">
+
+<div class="stat-icon">⚡</div>
+
+<div class="stat-number" id="profile-trainings">0</div>
+
+<div class="stat-label">Treningi</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- KONIEC ZAKŁADEK -->
+
+</main>
+
 <script>
 
-  // DANE ZAPISYWANE W PRZEGLĄDARCE
 
-  const STORAGE = {
+// ==============================
 
-    trainings: "trainings",
+// MECZOWNIK – SYSTEM APLIKACJI
 
-    matches: "matches",
+// ==============================
 
-    goals: "goals",
+let trainings = JSON.parse(localStorage.getItem("meczownik_trainings") || "[]");
 
-    profile: "profile"
+let matches = JSON.parse(localStorage.getItem("meczownik_matches") || "[]");
 
-  };
+let goals = JSON.parse(localStorage.getItem("meczownik_goals") || "[]");
 
-  function loadData(key, fallback) {
+let profile = JSON.parse(localStorage.getItem("meczownik_profile") || "{}");
 
-    try {
+function saveData() {
 
-      const saved = localStorage.getItem(key);
+  localStorage.setItem("meczownik_trainings", JSON.stringify(trainings));
 
-      return saved ? JSON.parse(saved) : fallback;
+  localStorage.setItem("meczownik_matches", JSON.stringify(matches));
 
-    } catch {
+  localStorage.setItem("meczownik_goals", JSON.stringify(goals));
 
-      return fallback;
+  localStorage.setItem("meczownik_profile", JSON.stringify(profile));
 
-    }
+}
 
-  }
+function esc(value) {
 
-  let trainings = loadData(STORAGE.trainings, []);
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
 
-  let matches = loadData(STORAGE.matches, []);
+    "&": "&amp;",
 
-  let goals = loadData(STORAGE.goals, []);
+    "<": "&lt;",
 
-  let profile = loadData(STORAGE.profile, {
+    ">": "&gt;",
 
-    name: "", position: "", club: ""
+    '"': "&quot;",
+
+    "'": "&#39;"
+
+  })[char]);
+
+}
+
+function formatDate(date) {
+
+  if (!date) return "Brak daty";
+
+  return new Date(date + "T12:00:00").toLocaleDateString("pl-PL");
+
+}
+
+function showPage(page) {
+
+  document.querySelectorAll(".page").forEach(section => {
+
+    section.classList.remove("active");
 
   });
 
-  if (!Array.isArray(trainings)) trainings = [];
+  document.getElementById(page).classList.add("active");
 
-  if (!Array.isArray(matches)) matches = [];
+  document.querySelectorAll("nav button").forEach(button => {
 
-  if (!Array.isArray(goals)) goals = [];
+    button.classList.toggle("active", button.dataset.page === page);
 
-  if (!profile || typeof profile !== "object") profile = {name:"",position:"",club:""};
+  });
 
-  function saveData() {
+  const titles = {
 
-    localStorage.setItem(STORAGE.trainings, JSON.stringify(trainings));
+    dashboard: "Pulpit",
 
-    localStorage.setItem(STORAGE.matches, JSON.stringify(matches));
-
-    localStorage.setItem(STORAGE.goals, JSON.stringify(goals));
-
-    localStorage.setItem(STORAGE.profile, JSON.stringify(profile));
-
-  }
-
-  function safe(value) {
-
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-
-      "&": "&amp;",
-
-      "<": "&lt;",
-
-      ">": "&gt;",
-
-      '"': "&quot;",
-
-      "'": "&#039;"
-
-    })[char]);
-
-  }
-
-  function formatDate(value) {
-
-    if (!value) return "Brak daty";
-
-    const parts = value.split("-");
-
-    if (parts.length !== 3) return value;
-
-    return `${parts[2]}.${parts[1]}.${parts[0]}`;
-
-  }
-
-  function todayString() {
-
-    const date = new Date();
-
-    const offset = date.getTimezoneOffset();
-
-    return new Date(date.getTime() - offset * 60000).toISOString().slice(0,10);
-
-  }
-
-  document.getElementById("todayDate").textContent =
-
-    new Date().toLocaleDateString("pl-PL", {
-
-      weekday: "long", day: "numeric", month: "long"
-
-    });
-
-  document.getElementById("trainingDate").value = todayString();
-
-  document.getElementById("matchDate").value = todayString();
-
-  // NAWIGACJA
-
-  const pageNames = {
-
-    home: "Pulpit",
-
-    training: "Treningi",
+    trainings: "Treningi",
 
     matches: "Mecze",
 
@@ -1816,446 +686,606 @@
 
   };
 
-  function showPage(page) {
-
-    document.querySelectorAll(".page").forEach(section => {
-
-      section.classList.toggle("active", section.id === `page-${page}`);
-
-    });
-
-    document.querySelectorAll(".nav-button").forEach(button => {
-
-      button.classList.toggle("active", button.dataset.page === page);
-
-    });
-
-    document.getElementById("pageTitle").textContent = pageNames[page] || "Pulpit";
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-  }
-
-  document.querySelectorAll(".nav-button").forEach(button => {
-
-    button.addEventListener("click", () => showPage(button.dataset.page));
-
-  });
-
-  document.querySelectorAll("[data-go]").forEach(button => {
-
-    button.addEventListener("click", () => showPage(button.dataset.go));
-
-  });
-
-  // TRENINGI
-
-  document.getElementById("trainingForm").addEventListener("submit", event => {
-
-    event.preventDefault();
-
-    const training = {
-
-      id: Date.now(),
-
-      date: document.getElementById("trainingDate").value,
-
-      type: document.getElementById("trainingType").value,
-
-      duration: Number(document.getElementById("trainingDuration").value),
-
-      intensity: document.getElementById("trainingIntensity").value,
-
-      notes: document.getElementById("trainingNotes").value.trim()
-
-    };
-
-    if (!training.date || training.duration < 1) return;
-
-    trainings.unshift(training);
-
-    saveData();
-
-    event.target.reset();
-
-    document.getElementById("trainingDate").value = todayString();
-
-    renderAll();
-
-  });
-
-  function renderTrainings() {
-
-    const list = document.getElementById("trainingList");
-
-    if (!trainings.length) {
-
-      list.innerHTML = '<div class="empty"><div class="empty-icon">⚡</div>Nie masz jeszcze treningów.<br>Dodaj pierwszy trening!</div>';
-
-      return;
-
-    }
-
-    list.innerHTML = trainings.map(item => `
-
-      <div class="entry">
-
-        <div class="entry-icon">⚡</div>
-
-        <div class="entry-body">
-
-          <div class="entry-title">${safe(item.type || "Trening")}</div>
-
-          <div class="entry-meta">${formatDate(item.date)} · ${Number(item.duration) || 0} min · ${safe(item.intensity || "—")}</div>
-
-          ${item.notes ? `<div class="entry-note">${safe(item.notes)}</div>` : ""}
-
-        </div>
-
-        <button class="delete-button" data-delete-training="${item.id}" aria-label="Usuń trening">✕</button>
-
-      </div>
-
-    `).join("");
-
-  }
-
-  // MECZE
-
-  document.getElementById("matchForm").addEventListener("submit", event => {
-
-    event.preventDefault();
-
-    const match = {
-
-      id: Date.now(),
-
-      date: document.getElementById("matchDate").value,
-
-      opponent: document.getElementById("matchOpponent").value.trim(),
-
-      goals: Number(document.getElementById("matchGoals").value),
-
-      assists: Number(document.getElementById("matchAssists").value),
-
-      minutes: Number(document.getElementById("matchMinutes").value)
-
-    };
-
-    if (!match.date || !match.opponent || match.minutes < 0) return;
-
-    matches.unshift(match);
-
-    saveData();
-
-    event.target.reset();
-
-    document.getElementById("matchDate").value = todayString();
-
-    document.getElementById("matchGoals").value = 0;
-
-    document.getElementById("matchAssists").value = 0;
-
-    renderAll();
-
-  });
-
-  function renderMatches() {
-
-    const list = document.getElementById("matchList");
-
-    if (!matches.length) {
-
-      list.innerHTML = '<div class="empty"><div class="empty-icon">⚽</div>Nie masz jeszcze meczów.<br>Dodaj swój pierwszy występ!</div>';
-
-      return;
-
-    }
-
-    list.innerHTML = matches.map(item => `
-
-      <div class="entry">
-
-        <div class="entry-icon">⚽</div>
-
-        <div class="entry-body">
-
-          <div class="entry-title">vs ${safe(item.opponent || "Przeciwnik")}</div>
-
-          <div class="entry-meta">${formatDate(item.date)} · ${Number(item.minutes) || 0} min</div>
-
-          <div class="entry-note">⚽ Gole: ${Number(item.goals) || 0} · 🎯 Asysty: ${Number(item.assists) || 0}</div>
-
-        </div>
-
-        <button class="delete-button" data-delete-match="${item.id}" aria-label="Usuń mecz">✕</button>
-
-      </div>
-
-    `).join("");
-
-  }
-
-  // CELE
-
-  document.getElementById("goalForm").addEventListener("submit", event => {
-
-    event.preventDefault();
-
-    const text = document.getElementById("goalText").value.trim();
-
-    if (!text) return;
-
-    goals.unshift({ id: Date.now(), text, done: false });
-
-    saveData();
-
-    event.target.reset();
-
-    renderAll();
-
-  });
-
-  function renderGoals() {
-
-    const list = document.getElementById("goalList");
-
-    if (!goals.length) {
-
-      list.innerHTML = '<div class="empty"><div class="empty-icon">◎</div>Nie masz jeszcze celów.<br>Dodaj coś, nad czym chcesz pracować.</div>';
-
-    } else {
-
-      list.innerHTML = goals.map(goal => `
-
-        <div class="goal-item ${goal.done ? "done" : ""}">
-
-          <input type="checkbox" data-toggle-goal="${goal.id}" ${goal.done ? "checked" : ""} aria-label="Oznacz cel">
-
-          <span class="goal-text">${safe(goal.text)}</span>
-
-          <button class="delete-button" data-delete-goal="${goal.id}" aria-label="Usuń cel">✕</button>
-
-        </div>
-
-      `).join("");
-
-    }
-
-    const completed = goals.filter(goal => goal.done).length;
-
-    const percent = goals.length ? Math.round(completed / goals.length * 100) : 0;
-
-    document.getElementById("goalProgress").style.width = percent + "%";
-
-    document.getElementById("goalProgressText").textContent = percent + "%";
-
-  }
-
-  // PROFIL
-
-  document.getElementById("profileForm").addEventListener("submit", event => {
-
-    event.preventDefault();
-
-    profile = {
-
-      name: document.getElementById("profileName").value.trim(),
-
-      position: document.getElementById("profilePosition").value,
-
-      club: document.getElementById("profileClub").value.trim()
-
-    };
-
-    saveData();
-
-    renderProfile();
-
-  });
-
-  function renderProfile() {
-
-    const name = profile.name || "Zawodnik";
-
-    const info = [profile.position, profile.club].filter(Boolean).join(" · ") || "Uzupełnij swój profil";
-
-    const initial = name.charAt(0).toUpperCase() || "Z";
-
-    document.getElementById("profileName").value = profile.name || "";
-
-    document.getElementById("profilePosition").value = profile.position || "";
-
-    document.getElementById("profileClub").value = profile.club || "";
-
-    document.getElementById("profileDisplayName").textContent = name;
-
-    document.getElementById("profileDisplayInfo").textContent = info;
-
-    document.getElementById("profileAvatar").textContent = initial;
-
-    document.getElementById("topAvatar").textContent = initial;
-
-    document.getElementById("welcomeName").textContent = name.split(" ")[0];
-
-  }
-
-  // USUWANIE I ZMIANA CELÓW
-
-  document.addEventListener("click", event => {
-
-    const trainingId = event.target.dataset.deleteTraining;
-
-    const matchId = event.target.dataset.deleteMatch;
-
-    const goalId = event.target.dataset.deleteGoal;
-
-    if (trainingId) {
-
-      trainings = trainings.filter(item => String(item.id) !== trainingId);
-
-      saveData();
-
-      renderAll();
-
-    }
-
-    if (matchId) {
-
-      matches = matches.filter(item => String(item.id) !== matchId);
-
-      saveData();
-
-      renderAll();
-
-    }
-
-    if (goalId) {
-
-      goals = goals.filter(item => String(item.id) !== goalId);
-
-      saveData();
-
-      renderAll();
-
-    }
-
-  });
-
-  document.addEventListener("change", event => {
-
-    const goalId = event.target.dataset.toggleGoal;
-
-    if (goalId) {
-
-      const goal = goals.find(item => String(item.id) === goalId);
-
-      if (goal) {
-
-        goal.done = event.target.checked;
-
-        saveData();
-
-        renderAll();
-
-      }
-
-    }
-
-  });
-
-  // PULPIT I OSTATNIA AKTYWNOŚĆ
-
-  function renderDashboard() {
-
-    const totalMinutes = trainings.reduce((sum, item) => sum + (Number(item.duration) || 0), 0);
-
-    const totalGoals = matches.reduce((sum, item) => sum + (Number(item.goals) || 0), 0);
-
-    document.getElementById("statTrainings").textContent = trainings.length;
-
-    document.getElementById("statHours").textContent = (totalMinutes / 60).toFixed(1).replace(".", ",");
-
-    document.getElementById("statMatches").textContent = matches.length;
-
-    document.getElementById("statGoals").textContent = totalGoals;
-
-    const activity = [
-
-      ...trainings.map(item => ({
-
-        date: item.date,
-
-        title: item.type || "Trening",
-
-        meta: `${Number(item.duration) || 0} minut`,
-
-        icon: "⚡"
-
-      })),
-
-      ...matches.map(item => ({
-
-        date: item.date,
-
-        title: `Mecz vs ${item.opponent || "Przeciwnik"}`,
-
-        meta: `${Number(item.goals) || 0} goli · ${Number(item.assists) || 0} asyst`,
-
-        icon: "⚽"
-
-      }))
-
-    ].sort((a,b) => (b.date || "").localeCompare(a.date || "")).slice(0,5);
-
-    const container = document.getElementById("recentActivity");
-
-    if (!activity.length) {
-
-      container.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>Twoja aktywność pojawi się tutaj,<br>gdy dodasz pierwszy trening lub mecz.</div>';
-
-      return;
-
-    }
-
-    container.innerHTML = activity.map(item => `
-
-      <div class="entry">
-
-        <div class="entry-icon">${item.icon}</div>
-
-        <div class="entry-body">
-
-          <div class="entry-title">${safe(item.title)}</div>
-
-          <div class="entry-meta">${formatDate(item.date)} · ${safe(item.meta)}</div>
-
-        </div>
-
-      </div>
-
-    `).join("");
-
-  }
-
-  function renderAll() {
-
-    renderTrainings();
-
-    renderMatches();
-
-    renderGoals();
-
-    renderProfile();
-
-    renderDashboard();
-
-  }
+  document.getElementById("page-title").textContent = titles[page];
 
   renderAll();
+
+}
+
+function toggleForm(id) {
+
+  const form = document.getElementById(id);
+
+  form.classList.toggle("open");
+
+}
+
+function openForm(id, page) {
+
+  showPage(page);
+
+  const form = document.getElementById(id);
+
+  form.classList.add("open");
+
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+
+}
+
+function closeForm(id) {
+
+  const form = document.getElementById(id);
+
+  form.classList.remove("open");
+
+  form.reset();
+
+}
+
+// ==============================
+
+// DODAWANIE TRENINGÓW
+
+// ==============================
+
+function saveTraining(event) {
+
+  event.preventDefault();
+
+  const training = {
+
+    id: Date.now(),
+
+    date: document.getElementById("training-date").value,
+
+    type: document.getElementById("training-type").value,
+
+    duration: Number(document.getElementById("training-duration").value),
+
+    intensity: document.getElementById("training-intensity").value,
+
+    notes: document.getElementById("training-notes").value
+
+  };
+
+  trainings.push(training);
+
+  saveData();
+
+  closeForm("training-form");
+
+  renderAll();
+
+}
+
+function deleteTraining(id) {
+
+  if (!confirm("Czy na pewno chcesz usunąć ten trening?")) return;
+
+  trainings = trainings.filter(item => item.id !== id);
+
+  saveData();
+
+  renderAll();
+
+}
+
+function renderTrainings() {
+
+  const container = document.getElementById("training-list");
+
+  if (!trainings.length) {
+
+    container.innerHTML = '<div class="empty">Nie masz jeszcze żadnych treningów.<br>Dodaj swój pierwszy trening!</div>';
+
+    return;
+
+  }
+
+  container.innerHTML = [...trainings]
+
+    .sort((a, b) => b.date.localeCompare(a.date))
+
+    .map(item => `
+
+      <div class="entry">
+
+        <div>
+
+          <h3>⚡ ${esc(item.type)}</h3>
+
+          <p>📅 ${formatDate(item.date)}<br>
+
+          ⏱️ ${item.duration} minut<br>
+
+          Intensywność: ${esc(item.intensity)}
+
+          ${item.notes ? "<br>Notatki: " + esc(item.notes) : ""}
+
+          </p>
+
+        </div>
+
+        <div class="entry-actions">
+
+          <button class="danger" onclick="deleteTraining(${item.id})">Usuń</button>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+// ==============================
+
+// DODAWANIE MECZÓW
+
+// ==============================
+
+function saveMatch(event) {
+
+  event.preventDefault();
+
+  const match = {
+
+    id: Date.now(),
+
+    date: document.getElementById("match-date").value,
+
+    opponent: document.getElementById("match-opponent").value,
+
+    goals: Number(document.getElementById("match-goals").value || 0),
+
+    assists: Number(document.getElementById("match-assists").value || 0),
+
+    minutes: Number(document.getElementById("match-minutes").value || 0),
+
+    rating: document.getElementById("match-rating").value,
+
+    scoreFor: Number(document.getElementById("match-score-for").value || 0),
+
+    scoreAgainst: Number(document.getElementById("match-score-against").value || 0),
+
+    notes: document.getElementById("match-notes").value
+
+  };
+
+  matches.push(match);
+
+  saveData();
+
+  closeForm("match-form");
+
+  renderAll();
+
+}
+
+function deleteMatch(id) {
+
+  if (!confirm("Czy na pewno chcesz usunąć ten mecz?")) return;
+
+  matches = matches.filter(item => item.id !== id);
+
+  saveData();
+
+  renderAll();
+
+}
+
+function renderMatches() {
+
+  const container = document.getElementById("match-list");
+
+  if (!matches.length) {
+
+    container.innerHTML = '<div class="empty">Nie masz jeszcze zapisanych meczów.<br>Dodaj swój pierwszy występ!</div>';
+
+    return;
+
+  }
+
+  container.innerHTML = [...matches]
+
+    .sort((a, b) => b.date.localeCompare(a.date))
+
+    .map(item => {
+
+      let result = "Remis";
+
+      if (item.scoreFor > item.scoreAgainst) result = "Zwycięstwo";
+
+      if (item.scoreFor < item.scoreAgainst) result = "Porażka";
+
+      return `
+
+        <div class="entry">
+
+          <div>
+
+            <h3>⚽ ${esc(item.opponent)}</h3>
+
+            <p>
+
+              📅 ${formatDate(item.date)}<br>
+
+              Wynik: ${item.scoreFor} : ${item.scoreAgainst} (${result})<br>
+
+              Gole: ${item.goals} | Asysty: ${item.assists}<br>
+
+              Czas gry: ${item.minutes} min
+
+              ${item.rating ? "<br>Ocena: " + esc(item.rating) + "/10" : ""}
+
+              ${item.notes ? "<br>Notatki: " + esc(item.notes) : ""}
+
+            </p>
+
+          </div>
+
+          <div class="entry-actions">
+
+            <button class="danger" onclick="deleteMatch(${item.id})">Usuń</button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+// ==============================
+
+// DODAWANIE CELÓW
+
+// ==============================
+
+function saveGoal(event) {
+
+  event.preventDefault();
+
+  const goal = {
+
+    id: Date.now(),
+
+    name: document.getElementById("goal-name").value,
+
+    category: document.getElementById("goal-category").value,
+
+    date: document.getElementById("goal-date").value,
+
+    description: document.getElementById("goal-description").value,
+
+    completed: false
+
+  };
+
+  goals.push(goal);
+
+  saveData();
+
+  closeForm("goal-form");
+
+  renderAll();
+
+}
+
+function toggleGoal(id) {
+
+  goals = goals.map(goal => {
+
+    if (goal.id === id) {
+
+      return { ...goal, completed: !goal.completed };
+
+    }
+
+    return goal;
+
+  });
+
+  saveData();
+
+  renderAll();
+
+}
+
+function deleteGoal(id) {
+
+  if (!confirm("Czy na pewno chcesz usunąć ten cel?")) return;
+
+  goals = goals.filter(goal => goal.id !== id);
+
+  saveData();
+
+  renderAll();
+
+}
+
+function renderGoals() {
+
+  const container = document.getElementById("goal-list");
+
+  if (!goals.length) {
+
+    container.innerHTML = '<div class="empty">Nie masz jeszcze żadnych celów.<br>Dodaj cel, nad którym chcesz pracować!</div>';
+
+    return;
+
+  }
+
+  container.innerHTML = goals.map(goal => `
+
+    <div class="entry">
+
+      <div>
+
+        <h3>${goal.completed ? "✅" : "🎯"} ${esc(goal.name)}</h3>
+
+        <p>
+
+          Kategoria: ${esc(goal.category)}<br>
+
+          Termin: ${goal.date ? formatDate(goal.date) : "Nie określono"}
+
+          ${goal.description ? "<br>" + esc(goal.description) : ""}
+
+          <br>Status: ${goal.completed ? "Ukończony" : "W trakcie"}
+
+        </p>
+
+      </div>
+
+      <div class="entry-actions">
+
+        <button class="secondary" onclick="toggleGoal(${goal.id})">
+
+          ${goal.completed ? "Cofnij" : "Ukończ"}
+
+        </button>
+
+        <button class="danger" onclick="deleteGoal(${goal.id})">Usuń</button>
+
+      </div>
+
+    </div>
+
+  `).join("");
+
+}
+
+// ==============================
+
+// PROFIL ZAWODNIKA
+
+// ==============================
+
+function saveProfile(event) {
+
+  event.preventDefault();
+
+  profile = {
+
+    name: document.getElementById("profile-name").value,
+
+    club: document.getElementById("profile-club").value,
+
+    position: document.getElementById("profile-position").value,
+
+    number: document.getElementById("profile-number").value,
+
+    foot: document.getElementById("profile-foot").value,
+
+    birthday: document.getElementById("profile-birthday").value,
+
+    description: document.getElementById("profile-description").value
+
+  };
+
+  saveData();
+
+  renderProfile();
+
+  alert("Profil został zapisany!");
+
+}
+
+function renderProfile() {
+
+  const fields = {
+
+    "profile-name": "name",
+
+    "profile-club": "club",
+
+    "profile-position": "position",
+
+    "profile-number": "number",
+
+    "profile-foot": "foot",
+
+    "profile-birthday": "birthday",
+
+    "profile-description": "description"
+
+  };
+
+  Object.entries(fields).forEach(([id, key]) => {
+
+    document.getElementById(id).value = profile[key] || "";
+
+  });
+
+  document.getElementById("profile-display-name").textContent =
+
+    profile.name || "Zawodnik";
+
+  document.getElementById("profile-display-club").textContent =
+
+    profile.club || "Twój klub piłkarski";
+
+  document.getElementById("header-user").textContent =
+
+    "⚽ " + (profile.name || "Zawodnik");
+
+  document.getElementById("profile-goals").textContent =
+
+    matches.reduce((sum, item) => sum + item.goals, 0);
+
+  document.getElementById("profile-assists").textContent =
+
+    matches.reduce((sum, item) => sum + item.assists, 0);
+
+  document.getElementById("profile-matches").textContent =
+
+    matches.length;
+
+  document.getElementById("profile-trainings").textContent =
+
+    trainings.length;
+
+}
+
+// ==============================
+
+// STATYSTYKI I PULPIT
+
+// ==============================
+
+function renderDashboard() {
+
+  const totalGoals = matches.reduce((sum, item) => sum + item.goals, 0);
+
+  const totalMinutes = trainings.reduce((sum, item) => sum + item.duration, 0);
+
+  document.getElementById("stat-training").textContent = trainings.length;
+
+  document.getElementById("stat-match").textContent = matches.length;
+
+  document.getElementById("stat-goals").textContent = totalGoals;
+
+  document.getElementById("stat-hours").textContent =
+
+    (totalMinutes / 60).toFixed(1) + " h";
+
+  const completed = goals.filter(goal => goal.completed).length;
+
+  const percent = goals.length
+
+    ? Math.round(completed / goals.length * 100)
+
+    : 0;
+
+  document.getElementById("goal-percent").textContent = percent + "%";
+
+  document.getElementById("goal-progress").style.width = percent + "%";
+
+  document.getElementById("goal-count").textContent =
+
+    completed + " z " + goals.length + " celów ukończonych";
+
+  const activities = [
+
+    ...trainings.map(item => ({
+
+      date: item.date,
+
+      title: "⚡ Trening: " + item.type,
+
+      detail: item.duration + " minut"
+
+    })),
+
+    ...matches.map(item => ({
+
+      date: item.date,
+
+      title: "⚽ Mecz: " + item.opponent,
+
+      detail: "Gole: " + item.goals + " | Asysty: " + item.assists
+
+    }))
+
+  ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+
+  const recent = document.getElementById("recent");
+
+  recent.innerHTML = activities.length
+
+    ? activities.map(item => `
+
+        <div class="activity">
+
+          <b>${esc(item.title)}</b>
+
+          <small>${formatDate(item.date)} · ${esc(item.detail)}</small>
+
+        </div>
+
+      `).join("")
+
+    : '<p style="color:#91a0b6;font-size:12px">Nie masz jeszcze żadnych wpisów.</p>';
+
+}
+
+// ==============================
+
+// ODSWIEŻANIE APLIKACJI
+
+// ==============================
+
+function renderAll() {
+
+  renderTrainings();
+
+  renderMatches();
+
+  renderGoals();
+
+  renderProfile();
+
+  renderDashboard();
+
+}
+
+function setDefaultDates() {
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  document.getElementById("training-date").value = today;
+
+  document.getElementById("match-date").value = today;
+
+}
+
+setDefaultDates();
+
+renderAll();
+
+</script>
+<script>
+const SUPABASE_URL = "sb_publishable_MUDyv5aHGI7-iad8Fdn_Gg_7vqYXMDb";
+const SUPABASE_KEY = "sb_secret_PZzI0kicCNrIYwHv0dGusQ_pPe9s2q0";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log("Meczownik połączony z Supabase!");
+</script>
+
+</body>
+
+</html>
 
 </script>
 
 </body>
 
 </html>
+
